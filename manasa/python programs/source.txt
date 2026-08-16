@@ -1,2 +1,0 @@
-This is the source file.
-It has two lines.

@@ -1,1 +1,0 @@
-File is handled using context manager.

@@ -1,3 +1,0 @@
-First line using writelines.
-Second line using writelines.
-Third line using writelines.

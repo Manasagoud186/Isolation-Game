@@ -1,5 +1,0 @@
-with open("source.txt", "r") as src, open("copy.txt", "w") as dst:
-    # Read contents from source and write to destination
-    dst.write(src.read())
-
-print("Contents copied from source.txt to copy.txt successfully.")

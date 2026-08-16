@@ -1,4 +1,0 @@
-Hello, this is line one.
-This is line two.
-Python file handling is easy!
-This is an appended line.

@@ -1,3 +1,0 @@
-Python is fun
-File handling is important
-We are counting words and lines
