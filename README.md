@@ -368,6 +368,8 @@ Possible future improvements include:
 ## 📸 Screenshots
 
 Add screenshots of the following sections here:
+<img width="1919" height="905" alt="image" src="https://github.com/user-attachments/assets/f0c853c3-97be-42f5-b196-c53aaa847da5" />
+
 
 ```text
 Main Menu
