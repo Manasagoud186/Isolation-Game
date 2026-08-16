@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isolation</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- PARTICLES BACKGROUND -->
+<canvas id="particles"></canvas>
+
+<div id="app">
+
+  <!-- ── MAIN MENU ── -->
+  <div id="screen-menu" class="screen active">
+    <div class="logo-wrap">
+      <div class="logo-glow"></div>
+      <h1 class="logo">ISOLATION</h1>
+      <p class="tagline">Outmaneuver. Outlast. Isolate.</p>
+    </div>
+    <nav class="main-nav">
+      <button class="btn btn-primary" onclick="showScreen('screen-mode')">
+        <span class="btn-icon">▶</span> Start Game
+      </button>
+      <button class="btn btn-secondary" onclick="showScreen('screen-instructions')">
+        <span class="btn-icon">📖</span> Instructions
+      </button>
+      <button class="btn btn-danger" onclick="exitGame()">
+        <span class="btn-icon">✕</span> Exit
+      </button>
+    </nav>
+    <div class="version">v2.0</div>
+  </div>
+
+  <!-- ── INSTRUCTIONS ── -->
+  <div id="screen-instructions" class="screen">
+    <div class="screen-header">
+      <button class="btn-back" onclick="showScreen('screen-menu')">‹ Back</button>
+      <h2>How to Play</h2>
+    </div>
+    <div class="instr-grid">
+      <div class="instr-card">
+        <div class="instr-icon">🎯</div>
+        <h3>Objective</h3>
+        <p>Force your opponent into a position where they <strong>cannot move</strong>. The player who can't move loses the round.</p>
+      </div>
+      <div class="instr-card">
+        <div class="instr-icon">➕</div>
+        <h3>Movement</h3>
+        <p>Move your piece <strong>one square</strong> — up, down, left, or right. No diagonals, no long slides.</p>
+      </div>
+      <div class="instr-card">
+        <div class="instr-icon">❌</div>
+        <h3>Removal</h3>
+        <p>The tile you <strong>just left</strong> is permanently removed from the board after every move.</p>
+      </div>
+      <div class="instr-card">
+        <div class="instr-icon">⏱️</div>
+        <h3>Timer</h3>
+        <p>Each player has <strong>30 seconds</strong> per turn. Run out of time and you lose the round!</p>
+      </div>
+      <div class="instr-card">
+        <div class="instr-icon">�</div>
+        <h3>Winning</h3>
+        <p>Win the <strong>majority of rounds</strong> to claim victory. Rounds are always odd so there's always a winner.</p>
+      </div>
+      <div class="instr-card">
+        <div class="instr-icon">🤖</div>
+        <h3>AI Mode</h3>
+        <p>Play against the AI which tries to <strong>minimize your moves</strong> each turn. Can you beat it?</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODE SELECT ── -->
+  <div id="screen-mode" class="screen">
+    <div class="screen-header">
+      <button class="btn-back" onclick="showScreen('screen-menu')">‹ Back</button>
+      <h2>Select Mode</h2>
+    </div>
+    <div class="mode-cards">
+      <div class="mode-card" onclick="selectMode('pvp')">
+        <div class="mode-icon">👥</div>
+        <h3>Player vs Player</h3>
+        <p>Two players on the same device. Take turns and battle it out.</p>
+        <span class="mode-btn">Select</span>
+      </div>
+      <div class="mode-card" onclick="selectMode('ai')">
+        <div class="mode-icon">🤖</div>
+        <h3>Player vs AI</h3>
+        <p>Challenge the computer. It plays smart — good luck.</p>
+        <span class="mode-btn">Select</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SETUP ── -->
+  <div id="screen-setup" class="screen">
+    <div class="screen-header">
+      <button class="btn-back" onclick="showScreen('screen-mode')">‹ Back</button>
+      <h2>Game Setup</h2>
+    </div>
+    <div class="setup-body">
+      <div class="setup-section">
+        <label class="setup-label">Number of Rounds <span class="label-hint">(odd only)</span></label>
+        <div class="round-selector">
+          <button class="round-btn" onclick="changeRounds(-2)">−</button>
+          <div class="round-display">
+            <span id="rounds-display">3</span>
+            <small>rounds</small>
+          </div>
+          <button class="round-btn" onclick="changeRounds(2)">+</button>
+        </div>
+        <div id="round-preview" class="round-preview"></div>
+      </div>
+      <div class="setup-players">
+        <div class="setup-player">
+          <div class="setup-player-icon" id="p1-preview"></div>
+          <label class="setup-label">Player 1</label>
+          <div class="color-picker" id="p1-colors"></div>
+        </div>
+        <div class="setup-vs">VS</div>
+        <div class="setup-player">
+          <div class="setup-player-icon" id="p2-preview"></div>
+          <label class="setup-label" id="p2-label">Player 2</label>
+          <div class="color-picker" id="p2-colors"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-large" onclick="startGame()">🎮 Start Game</button>
+    </div>
+  </div>
+
+  <!-- ── GAME ── -->
+  <div id="screen-game" class="screen">
+    <div id="game-topbar">
+      <div class="player-card" id="p1-card">
+        <div class="pc-avatar" id="p1-dot"></div>
+        <div class="pc-info">
+          <div class="pc-name" id="p1-name">Player 1</div>
+          <div class="pc-score" id="p1-score">
+            <span class="score-dots" id="p1-dots"></span>
+          </div>
+        </div>
+        <div class="pc-timer" id="p1-timer">0:30</div>
+      </div>
+
+      <div id="center-hud">
+        <div id="round-badge">Round <span id="current-round">1</span><span id="round-sep">/</span><span id="total-rounds">3</span></div>
+        <div id="round-size-hint" class="round-size-hint">5×5</div>
+        <div id="turn-banner">Player 1's Turn</div>
+        <div id="status-bar">—</div>
+      </div>
+
+      <div class="player-card right" id="p2-card">
+        <div class="pc-timer right-timer" id="p2-timer">0:30</div>
+        <div class="pc-info right-info">
+          <div class="pc-name" id="p2-name">Player 2</div>
+          <div class="pc-score" id="p2-score">
+            <span class="score-dots" id="p2-dots"></span>
+          </div>
+        </div>
+        <div class="pc-avatar" id="p2-dot"></div>
+      </div>
+    </div>
+
+    <div id="board-wrap">
+      <div id="board"></div>
+    </div>
+
+    <div id="game-footer">
+      <button class="btn btn-danger btn-sm" onclick="confirmQuit()">✕ Quit</button>
+    </div>
+  </div>
+
+  <!-- ── RESULT ── -->
+  <div id="screen-result" class="screen">
+    <div class="result-trophy" id="result-trophy">🏆</div>
+    <h2 id="result-title">Game Over</h2>
+    <div id="result-score-row"></div>
+    <div id="result-log"></div>
+    <div class="result-actions">
+      <button class="btn btn-primary" onclick="playAgain()">🔄 Play Again</button>
+      <button class="btn btn-secondary" onclick="showScreen('screen-menu')">🏠 Main Menu</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
