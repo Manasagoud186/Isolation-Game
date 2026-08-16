@@ -370,14 +370,13 @@ Possible future improvements include:
 Add screenshots of the following sections here:
 <img width="1919" height="905" alt="image" src="https://github.com/user-attachments/assets/f0c853c3-97be-42f5-b196-c53aaa847da5" />
 
+<img width="1904" height="911" alt="image" src="https://github.com/user-attachments/assets/f1fe7fd8-4206-4a0a-8b36-3092adfdd4ed" />
+<img width="1919" height="961" alt="image" src="https://github.com/user-attachments/assets/e8fbe6ef-15a9-4027-8f4b-b2a96c69b081" />
+<img width="1917" height="910" alt="image" src="https://github.com/user-attachments/assets/6ff8c500-ccfb-4214-ae9d-a66fe94d8b89" />
+<img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/cd8df4d2-fc6c-4eda-acaf-80769339d8fa" />
+<img width="1918" height="902" alt="image" src="https://github.com/user-attachments/assets/9a9a92f6-1720-4c84-8a20-8e27a31c41ec" />
 
-```text
-Main Menu
-Game Mode Selection
-Game Setup
-Gameplay
-AI Gameplay
-Final Results
+
 ```
 
 Example:
