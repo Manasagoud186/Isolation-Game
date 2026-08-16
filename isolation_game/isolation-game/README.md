@@ -1,445 +1,84 @@
-# 🎮 Isolation Game
+# Isolation Game
 
-> **Outmaneuver. Outlast. Isolate.**
+A strategic two-player board game where you outmaneuver your opponent by cutting off their moves — until they have nowhere left to go.
 
-Isolation Game is a strategic browser-based board game where players compete by moving their pieces and permanently removing the tiles they leave behind. The goal is to restrict the opponent's movement until they have no valid moves remaining.
+## How to Play
 
-The game supports both **Player vs Player** and **Player vs AI** modes and includes multiple rounds, dynamic board sizes, turn timers, animations, color customization, and an AI opponent powered by **Minimax with Alpha-Beta Pruning**.
+Open `index.html` in any browser. No installation or server needed.
 
----
+## Game Rules
 
-## 📌 Project Overview
+1. Each player has one piece on the board, starting at opposite corners.
+2. On your turn, move your piece **one square** — up, down, left, or right. No diagonals.
+3. The tile you just left is **permanently removed** from the board.
+4. The player who **cannot move** loses the round.
+5. Win the **majority of rounds** to win the match.
 
-Isolation is a two-player strategy game based on movement, positioning, and blocking.
+## Features
 
-Each player starts from an opposite corner of the board. During a turn, a player moves one square horizontally or vertically. The tile they leave becomes permanently unavailable.
+- **Player vs Player** — two players on the same device
+- **Player vs AI** — the AI minimizes your available moves each turn
+- **Growing board** — each round the grid gets bigger (Round 1: 5×5, Round 2: 7×7, Round 3: 9×9 ...)
+- **Shrinking timer** — each round you get less time per turn (30s → 25s → 20s → 15s → 10s min)
+- **Smooth animations** — pieces slide across the board, removed tiles flash, danger warning when nearly trapped
+- **Streak tracking** — consecutive round wins shown in results
+- **Color selection** — each player picks their own color before the game
 
-As more tiles are removed, the available space becomes smaller. The player who cannot make a valid move loses the round.
+## Files
 
-The match is decided by the player who wins the majority of the rounds.
-
----
-
-## ✨ Features
-
-### 👥 Player vs Player
-
-Two players can play against each other on the same device by taking turns.
-
-### 🤖 Player vs AI
-
-Play against a computer-controlled opponent. The AI analyzes possible moves using a game-tree search algorithm.
-
-### 🧠 Minimax with Alpha-Beta Pruning
-
-The AI uses Minimax with Alpha-Beta Pruning to search possible future game states and select a strategically strong move.
-
-The current implementation uses a search depth of **5**.
-
-### 📈 Growing Board
-
-The board size increases as the rounds progress:
-
-```text
-Round 1 → 5 × 5
-Round 2 → 7 × 7
-Round 3 → 9 × 9
-Round 4 → 11 × 11
-...
+```
+isolation-game/
+├── index.html   — game UI and screens
+├── game.js      — all game logic, AI, animations
+├── style.css    — styling and animations
+└── README.md    — this file
 ```
 
-### ⏱️ Dynamic Turn Timer
+## AI — How It Works
 
-The available time decreases as the rounds progress:
-
-```text
-Round 1 → 30 seconds
-Round 2 → 25 seconds
-Round 3 → 20 seconds
-Round 4 → 15 seconds
-Round 5+ → 10 seconds minimum
-```
-
-### 🎨 Player Color Selection
-
-Players can select different colors before starting the game.
-
-### 🎬 Smooth Animations
-
-The game includes:
-
-* Piece movement animations
-* Removed-tile effects
-* Turn transitions
-* Winning animations
-* Danger warnings
-* Active-player indicators
-
-### 🔥 Streak Tracking
-
-Consecutive round victories are tracked and displayed in the results screen.
-
-### 📱 Responsive Interface
-
-The interface adapts to smaller screens using responsive CSS.
-
----
-
-## 🎯 Game Rules
-
-1. Each player starts with one piece.
-2. Players start from opposite corners of the board.
-3. A player can move **one square** per turn.
-4. Movement is allowed:
-
-   * Up
-   * Down
-   * Left
-   * Right
-5. Diagonal movement is not allowed.
-6. The tile that the player leaves is permanently removed.
-7. Removed tiles cannot be used again.
-8. If a player has no valid moves, they lose the round.
-9. The player who wins the majority of rounds wins the match.
-10. If a player's timer reaches zero, they lose the round.
-
----
-
-## 🕹️ How to Play
-
-### Step 1 — Start the Game
-
-Open `index.html` in a web browser.
-
-### Step 2 — Select Game Mode
-
-Choose one of:
-
-* **Player vs Player**
-* **Player vs AI**
-
-### Step 3 — Configure the Game
-
-Choose:
-
-* Number of rounds
-* Player colors
-
-The number of rounds is restricted to odd numbers so that a match can have a clear majority winner.
-
-### Step 4 — Make Your Move
-
-Select your piece.
-
-The game will highlight the valid cells where you can move.
-
-Click one of the highlighted cells to move.
-
-### Step 5 — Isolate Your Opponent
-
-Use your movement strategically to remove important tiles and reduce the opponent's available moves.
-
----
-
-## 🧠 AI Algorithm
-
-The AI uses **Minimax with Alpha-Beta Pruning**.
-
-### Minimax
-
-Minimax is a decision-making algorithm commonly used in two-player strategy games.
-
-The AI considers possible future moves and tries to choose the move that produces the best outcome for itself while assuming that the opponent will also make good decisions.
+The AI uses a **greedy mobility heuristic**: on each turn it picks the move that leaves the opponent with the fewest available moves. This is a one-step lookahead — fast and effective for smaller boards.
 
 ### Alpha-Beta Pruning
 
-Alpha-Beta Pruning improves Minimax by eliminating branches of the game tree that cannot influence the final decision.
+Alpha-beta pruning is the standard algorithm used to make game-tree search practical for two-player zero-sum games like Isolation.
 
-Two values are maintained:
+**How it works:**
 
-* **Alpha** — the best score currently guaranteed for the maximizing player.
-* **Beta** — the best score currently guaranteed for the minimizing player.
+A minimax search explores every possible sequence of moves to a given depth, then picks the move with the best outcome assuming both players play optimally. The problem is the tree grows exponentially — on a 7×7 board with 4-directional movement, the branching factor makes deep search very slow.
 
-When:
+Alpha-beta pruning cuts branches that can never affect the final decision:
 
-```text
-Beta ≤ Alpha
+- **Alpha** — the best score the maximizing player (AI) is guaranteed so far
+- **Beta** — the best score the minimizing player (opponent) is guaranteed so far
+- If at any node `beta ≤ alpha`, the rest of that branch is pruned — it won't change the outcome
+
+**Example:**
+```
+Maximizer looking at move A (score 6) then move B:
+  Move B's subtree shows the minimizer can force score 4
+  Since 4 < 6 (alpha), the maximizer will never pick B
+  → prune the rest of B's subtree entirely
 ```
 
-the remaining branches can be skipped because they cannot improve the decision.
+**Why it matters for Isolation:**
 
-### Evaluation Function
+Isolation is a perfect fit for alpha-beta because:
+- It's a two-player, zero-sum, perfect-information game
+- The game tree terminates (board tiles only get removed, never added)
+- The evaluation function is simple: `my_moves - opponent_moves`
 
-The AI evaluates a position using:
+With alpha-beta pruning at depth 4–6, the AI can look several moves ahead and play near-optimally, especially on later rounds where the board is more constrained and the branching factor drops quickly.
 
-```text
-AI available moves - Opponent available moves
-```
+The current implementation uses depth-1 greedy search. Upgrading to full alpha-beta would make the AI significantly stronger on larger boards.
 
-The number of available moves is given greater importance, while board-center positioning is also considered.
+- Corner and edge positions are dangerous — you run out of moves faster there.
+- Try to stay in open space while pushing your opponent toward removed tiles.
+- Watch the danger glow — if your piece pulses red, you only have 1–2 moves left.
+- On later rounds the board is bigger but the timer is shorter, so plan fast.
 
-This encourages the AI to maintain mobility while restricting the opponent.
+## Tips
 
----
-
-## 🏗️ Project Structure
-
-```text
-Isolation-Game/
-│
-├── index.html
-├── game.js
-├── style.css
-└── README.md
-```
-
-### `index.html`
-
-Contains the structure of the game interface, including:
-
-* Main menu
-* Instructions
-* Game mode selection
-* Game setup
-* Game board
-* Player information
-* Timers
-* Results screen
-
-### `game.js`
-
-Contains the main game functionality:
-
-* Game state management
-* Board creation
-* Player movement
-* Valid move calculation
-* Round management
-* Timer management
-* Score tracking
-* Animations
-* AI decision-making
-* Minimax
-* Alpha-Beta Pruning
-
-### `style.css`
-
-Contains:
-
-* Game layout
-* Dark theme
-* Buttons
-* Player cards
-* Board styling
-* Animations
-* Responsive design
-* Winning and danger effects
-
-### `README.md`
-
-Contains the project documentation, game rules, features, AI explanation, and instructions.
-
----
-
-## 🛠️ Technologies Used
-
-| Technology         | Purpose                                           |
-| ------------------ | ------------------------------------------------- |
-| HTML5              | Game structure and interface                      |
-| CSS3               | Styling, layout, animations and responsive design |
-| JavaScript         | Game logic and interaction                        |
-| Minimax            | AI decision-making                                |
-| Alpha-Beta Pruning | Optimization of AI game-tree search               |
-| Git                | Version control                                   |
-| GitHub             | Source code hosting                               |
-
----
-
-## ▶️ How to Run
-
-No installation or backend server is required.
-
-### Option 1 — Open Directly
-
-1. Download or clone the repository.
-2. Open the project folder.
-3. Double-click:
-
-```text
-index.html
-```
-
-4. The game will open in your browser.
-
-### Option 2 — Using VS Code
-
-Open the project folder in Visual Studio Code and open `index.html` using a browser.
-
----
-
-## 🎮 Game Flow
-
-```text
-Start Game
-     ↓
-Select Game Mode
-     ↓
-Configure Rounds & Colors
-     ↓
-Start Round
-     ↓
-Player Selects Piece
-     ↓
-Valid Moves Highlighted
-     ↓
-Player Moves
-     ↓
-Previous Tile Removed
-     ↓
-Opponent's Turn
-     ↓
-Check Available Moves
-     ↓
- ┌───────────────┐
- │ Moves Available│
- └───────┬───────┘
-         ↓
-    Continue Game
-         │
-         ↓
- ┌────────────────┐
- │ No Moves / Time│
- │     Expired    │
- └───────┬────────┘
-         ↓
-      Round Ends
-         ↓
-  More Rounds?
-    ↙        ↘
-  Yes         No
-   ↓           ↓
-Next Round   Final Result
-```
-
----
-
-## 🔍 Key Technical Concepts
-
-This project demonstrates practical implementation of:
-
-* Two-player game logic
-* Game-state management
-* Board representation using arrays
-* Valid-move generation
-* Turn-based programming
-* Timers
-* Event handling
-* DOM manipulation
-* CSS animations
-* Responsive web design
-* Artificial intelligence
-* Minimax search
-* Alpha-Beta Pruning
-* Heuristic evaluation
-* Game-tree optimization
-
----
-
-## 🚀 Future Enhancements
-
-Possible future improvements include:
-
-* Online multiplayer
-* Multiplayer using WebSockets
-* Difficulty levels for AI
-* AI move explanation
-* Player name customization
-* Sound effects and background music
-* Leaderboard system
-* Game history storage
-* Undo/replay functionality
-* Dark/light theme selection
-* Mobile touch optimization
-* Improved AI with deeper search
-* Persistent player statistics
-
----
-
-## 📸 Screenshots
-
-Add screenshots of the following sections here:
-
-```text
-Main Menu
-Game Mode Selection
-Game Setup
-Gameplay
-AI Gameplay
-Final Results
-```
-
-Example:
-
-```markdown
-![Main Menu](screenshots/main-menu.png)
-```
-
-Create a `screenshots` folder when you add the images:
-
-```text
-Isolation-Game/
-│
-├── screenshots/
-│   ├── main-menu.png
-│   ├── game-setup.png
-│   ├── gameplay.png
-│   └── results.png
-│
-├── index.html
-├── game.js
-├── style.css
-└── README.md
-```
-
----
-
-## 📚 Learning Outcomes
-
-Through this project, the following concepts are demonstrated:
-
-* Understanding game development using JavaScript
-* Applying data structures to represent a game board
-* Implementing turn-based game mechanics
-* Understanding search algorithms
-* Implementing Minimax and Alpha-Beta Pruning
-* Designing heuristic evaluation functions
-* Managing game states
-* Creating interactive browser interfaces
-* Using Git and GitHub for version control
-
----
-
-## 👩‍💻 Project Information
-
-**Project:** Isolation Game
-**Type:** Browser-Based Strategy Game
-**Platform:** Web Browser
-**Languages:** HTML, CSS, JavaScript
-**AI:** Minimax with Alpha-Beta Pruning
-**Version:** 2.0
-
----
-
-## ⭐ Conclusion
-
-Isolation Game combines **web development, game logic, and artificial intelligence** into an interactive strategy game.
-
-The project demonstrates how JavaScript can be used to create a complete browser-based game while applying algorithmic concepts such as **Minimax, Alpha-Beta Pruning, heuristic evaluation, and game-state search**.
-
-The main challenge is not simply making legal moves, but controlling the available space and strategically isolating the opponent before they isolate you.
-
----
-
-## 📄 License
-
-This project is developed for educational and academic purposes.
+- Corner and edge positions are dangerous — you run out of moves faster there.
+- Try to stay in open space while pushing your opponent toward removed tiles.
+- Watch the danger glow — if your piece pulses red, you only have 1–2 moves left.
+- On later rounds the board is bigger but the timer is shorter, so plan fast.
