@@ -132,3 +132,27 @@ body{font-family:"Segoe UI",Tahoma,sans-serif;background:#0d0d1a;color:#e0e0ff;m
   .pc-timer{font-size:0.9rem;}
   .player-card{padding:6px 8px;}
 }
+
+/* Mobile UI Improvements */
+@media (max-width: 520px) {
+  #app {
+    padding: 12px 10px;
+  }
+
+  #game-topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .player-card {
+    min-width: 140px;
+  }
+
+  #board-wrap {
+    overflow-x: auto;
+  }
+
+  button {
+    min-height: 44px;
+  }
+}
